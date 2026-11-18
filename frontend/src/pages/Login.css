@@ -313,3 +313,22 @@
         margin-top: 40px;
     }
 }
+
+/* Student Registration Link */
+
+.login-register-link {
+    margin-top: 22px;
+    text-align: center;
+    color: #7b8495;
+    font-size: 13px;
+}
+
+.login-register-link a {
+    color: #315cf5;
+    font-weight: 650;
+    text-decoration: none;
+}
+
+.login-register-link a:hover {
+    text-decoration: underline;
+}
