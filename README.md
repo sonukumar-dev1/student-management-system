@@ -1,78 +1,191 @@
-# Student Management System – Backend
+# Student Management System
 
-A secure and structured RESTful API for managing student records and administrative operations. This backend provides authentication, role-based authorization, student profile management, and administrative control over student records.
+A full-stack Student Management System built using React.js, Node.js, Express.js, and MongoDB. The application provides student registration, authentication, profile management, and administrative control over student records.
 
 ## Features
 
-### Authentication & Authorization
+### Student
 - Student registration and login
-- Admin login
-- JWT-based authentication
-- Password hashing using bcrypt
-- Role-based access control
-- Secure logout with token blacklisting
-
-### Student Features
-- Register a new student account
-- Login securely
 - View personal profile
-- Update personal profile
-- Calculate student age from date of birth
+- Update name, phone number, and date of birth
+- View calculated age
 - Secure logout
 
-### Admin Features
-- Secure admin authentication
+### Admin
+- Admin login
 - View all registered students
 - View individual student details
-- Update student information
+- Edit student information
 - Delete student records
-- Protected admin routes
+- Secure logout
+
+### Security
+- JWT-based authentication
+- Password hashing using bcrypt
+- Role-based authorization
+- Protected API routes
+- Token blacklisting on logout
+- Input validation
 
 ## Tech Stack
 
-- **Runtime:** Node.js
-- **Backend Framework:** Express.js
-- **Database:** MongoDB
-- **ODM:** Mongoose
-- **Authentication:** JSON Web Token (JWT)
-- **Password Security:** bcrypt
-- **Request Validation:** express-validator
+**Frontend**
+- React.js
+- Vite
+- React Router
+- Axios
+- CSS
+
+**Backend**
+- Node.js
+- Express.js
+- Mongoose
+- MongoDB
+- JWT
+- bcryptjs
+- express-validator
 
 ## Project Structure
 
 ```text
-backend/
+student-management-system/
 │
-├── config/
-│   └── db.js
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── scripts/
+│   ├── server.js
+│   └── package.json
 │
-├── controllers/
-│   ├── adminController.js
-│   ├── authController.js
-│   └── studentController.js
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   └── App.jsx
+│   ├── package.json
+│   └── vite.config.js
 │
-├── middleware/
-│   ├── authMiddleware.js
-│   └── validators.js
-│
-├── models/
-│   ├── Admin.js
-│   ├── Student.js
-│   └── TokenBlacklist.js
-│
-├── routes/
-│   ├── adminRoutes.js
-│   ├── authRoutes.js
-│   └── studentRoutes.js
-│
-├── scripts/
-│   └── createAdmin.js
-│
-├── .env
-├── .gitignore
-├── package.json
-└── server.js
+└── README.md
 ```
+
+## Prerequisites
+
+Install the following software before running the project:
+
+- Node.js (Node.js 22 LTS recommended)
+- npm (comes with Node.js)
+- Git
+- MongoDB Community Server or a MongoDB Atlas database
+
+## Installation and Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone --branch feature/full-stack-project https://github.com/sonukumar-dev1/student-management-system.git
+```
+
+### 2. Open the Project
+
+```bash
+cd student-management-system
+```
+
+### 3. Backend Setup
+
+Open a terminal:
+
+```bash
+cd backend
+npm install
+```
+
+### 4. Configure Backend Environment Variables
+
+Create a `.env` file inside the `backend` folder.
+
+Add the following configuration:
+
+```env
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/student_management_system
+JWT_SECRET=replace_with_a_long_random_secret
+ADMIN_NAME=Project Admin
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=replace_with_a_strong_password
+```
+
+**Important:**
+- Make sure MongoDB Server is running if using a local MongoDB connection.
+- For MongoDB Atlas, replace `MONGO_URI` with your Atlas connection string.
+- Use your own strong JWT secret and admin password.
+- Never commit `.env` or share its secrets publicly.
+
+### 5. Create Admin Account
+
+From the `backend` directory, run:
+
+```bash
+node scripts/createAdmin.js
+```
+
+This creates the admin account using the credentials configured in `.env`.
+
+If the admin already exists, the script will report that it already exists.
+
+### 6. Start Backend Server
+
+From the `backend` directory:
+
+```bash
+npm run dev
+```
+
+Alternatively:
+
+```bash
+npm start
+```
+
+Backend API will run at:
+
+```text
+http://localhost:5000
+```
+
+API health check:
+
+```text
+http://localhost:5000/
+```
+
+### 7. Frontend Setup
+
+Open a **new terminal** in the project root:
+
+```bash
+cd frontend
+npm install
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Open the local URL displayed by Vite in the terminal. By default, it is:
+
+```text
+http://localhost:5173
+```
+
+Keep both backend and frontend terminals running while using the application.
 
 ## API Endpoints
 
@@ -82,147 +195,50 @@ Base URL:
 http://localhost:5000/api
 ```
 
-### Authentication APIs
+### Authentication
 
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/auth/register` | Register a student |
+| POST | `/auth/register` | Student registration |
 | POST | `/auth/login` | Student login |
 | POST | `/auth/logout` | Student logout |
 
-### Student APIs
+### Student
 
 | Method | Endpoint | Description |
 |---|---|---|
-| GET | `/students/profile` | Get logged-in student profile |
-| PUT | `/students/profile` | Update student profile |
+| GET | `/students/profile` | View own profile |
+| PUT | `/students/profile` | Update own profile |
 
-### Admin APIs
+### Admin
 
 | Method | Endpoint | Description |
 |---|---|---|
 | POST | `/admin/login` | Admin login |
 | POST | `/admin/logout` | Admin logout |
-| GET | `/admin/dashboard` | Access admin dashboard |
-| GET | `/admin/students` | Get all students |
-| GET | `/admin/students/:id` | Get student by ID |
+| GET | `/admin/dashboard` | Admin dashboard API |
+| GET | `/admin/students` | View all students |
+| GET | `/admin/students/:id` | View student details |
 | PUT | `/admin/students/:id` | Update student |
 | DELETE | `/admin/students/:id` | Delete student |
 
-## Authentication
-
-Protected APIs require a valid JWT token in the request header.
+Protected APIs require:
 
 ```text
 Authorization: Bearer YOUR_JWT_TOKEN
 ```
 
-Role-based middleware ensures that students and administrators can access only their authorized resources.
+## How to Test
 
-## Student Registration Fields
-
-The student registration API accepts:
-
-- Name
-- Email
-- Phone Number
-- Date of Birth
-- Password
-
-Passwords are hashed before being stored in the database.
-
-## Student Profile Update
-
-Students can update their own:
-
-- Name
-- Phone Number
-- Date of Birth
-
-Email and password are not updated through this profile API.
-
-## Admin Operations
-
-Administrators can:
-
-- View all registered students
-- View individual student information
-- Edit student details
-- Delete student records
-
-Admin operations are protected by JWT authentication and role-based authorization.
-
-## Installation & Setup
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/sonukumar-dev1/student-management-system.git
-```
-
-### 2. Navigate to Backend
-
-```bash
-cd student-management-system/backend
-```
-
-### 3. Install Dependencies
-
-```bash
-npm install
-```
-
-### 4. Configure Environment Variables
-
-Create a `.env` file inside the backend directory.
-
-Add your MongoDB connection string, server port, and JWT secret using the variable names expected by your backend configuration.
-
-Example:
-
-```env
-PORT=5000
-MONGO_URI=your_mongodb_connection_string
-JWT_SECRET=your_secret_key
-```
-
-**Important:** Never upload your actual `.env` file or secret keys to GitHub.
-
-### 5. Start the Server
-
-```bash
-npm start
-```
-
-If your project does not have a start script configured, run:
-
-```bash
-node server.js
-```
-
-## API Testing
-
-The backend APIs can be tested using Postman.
-
-Test the following operations:
-
-- Student registration
-- Student login
-- Admin login
-- Student profile retrieval
-- Student profile update
-- Admin student listing
-- Admin student update
-- Admin student deletion
-- Student and admin logout
-
-## Security
-
-- Passwords are stored using bcrypt hashing.
-- JWT authentication protects private routes.
-- Role-based authorization restricts access.
-- Token blacklisting supports secure logout.
-- Input validation helps prevent invalid data.
+1. Open the frontend in a browser.
+2. Register a new student account.
+3. Login using student credentials.
+4. View and update the student profile.
+5. Logout from the student account.
+6. Login using the configured admin credentials.
+7. View all registered students.
+8. Edit and delete student records.
+9. Logout from the admin account.
 
 ## Author
 
@@ -234,4 +250,4 @@ GitHub: https://github.com/sonukumar-dev1
 
 ---
 
-**Student Management System – Backend**
+**Student Management System – Full Stack Project**
