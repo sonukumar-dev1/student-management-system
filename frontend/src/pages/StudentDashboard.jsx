@@ -5,6 +5,7 @@ import AuthContext from "../context/AuthContext";
 import authService from "../services/authService";
 import api from "../services/api";
 import "./StudentDashboard.css";
+
 function StudentDashboard() {
     const { user, token, logout } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -21,7 +22,6 @@ function StudentDashboard() {
         dateOfBirth: "",
     });
 
-    // Fetch Student Profile
     useEffect(() => {
         const fetchProfile = async () => {
             try {
@@ -59,7 +59,6 @@ function StudentDashboard() {
         }
     }, [token]);
 
-    // Handle Form Input
     const handleChange = (e) => {
         const { name, value } = e.target;
 
@@ -69,7 +68,6 @@ function StudentDashboard() {
         }));
     };
 
-    // Open Edit Form
     const handleEdit = () => {
         setFormData({
             name: student.name || "",
@@ -85,7 +83,6 @@ function StudentDashboard() {
         setError("");
     };
 
-    // Update Student Profile
     const handleUpdate = async (e) => {
         e.preventDefault();
 
@@ -121,7 +118,6 @@ function StudentDashboard() {
                 }
             );
 
-            // Fetch updated profile including age
             const profileResponse = await api.get(
                 "/students/profile",
                 {
@@ -132,7 +128,6 @@ function StudentDashboard() {
             );
 
             setStudent(profileResponse.data.student);
-
             setEditing(false);
 
             alert(
@@ -149,7 +144,6 @@ function StudentDashboard() {
         }
     };
 
-    // Student Logout
     const handleLogout = async () => {
         try {
             await authService.logoutStudent(token);
@@ -161,177 +155,285 @@ function StudentDashboard() {
         }
     };
 
+    const firstLetter = (
+        student?.name || user?.name || "S"
+    ).charAt(0).toUpperCase();
+
     return (
-        <div className="student-dashboard">
-            <div className="student-card">
-                <h1>Student Dashboard</h1>
+        <div className="student-layout">
 
-                <p>
-                    Welcome, {student?.name || user?.name || "Student"}!
-                </p>
+            <aside className="student-sidebar">
+                <div className="student-brand">
+                    <div className="student-brand-icon">S</div>
+                    <span>Student<span>Hub</span></span>
+                </div>
 
-                <hr />
+                <p className="student-menu-label">STUDENT MENU</p>
 
-                <h2>My Profile</h2>
+                <nav className="student-sidebar-nav">
+                    <a href="#overview" className="student-nav-link active">
+                        <span>▦</span>
+                        Overview
+                    </a>
 
-                {loading && <p>Loading profile...</p>}
+                    <a href="#profile" className="student-nav-link">
+                        <span>♙</span>
+                        My Profile
+                    </a>
+                </nav>
 
-                {error && (
-                    <p style={{ color: "red" }}>{error}</p>
-                )}
+                <div className="student-sidebar-bottom">
+                    <div className="student-sidebar-user">
+                        <div className="student-user-avatar">
+                            {firstLetter}
+                        </div>
 
-                {!loading && student && !editing && (
+                        <div>
+                            <strong>
+                                {student?.name || user?.name || "Student"}
+                            </strong>
+                            <small>Student Account</small>
+                        </div>
+                    </div>
+
+                    <button
+                        className="student-logout-btn"
+                        onClick={handleLogout}
+                    >
+                        ↪ Logout
+                    </button>
+                </div>
+            </aside>
+
+            <main className="student-main">
+
+                <header className="student-topbar">
                     <div>
-                        <p><strong>Name:</strong> {student.name}</p>
+                        <h1>Student Dashboard</h1>
+                        <p>Manage your personal information</p>
+                    </div>
 
-                        <p><strong>Email:</strong> {student.email}</p>
+                    <div className="student-topbar-profile">
+                        <div className="student-topbar-avatar">
+                            {firstLetter}
+                        </div>
 
-                        <p><strong>Phone:</strong> {student.phone}</p>
+                        <div>
+                            <strong>
+                                {student?.name || user?.name || "Student"}
+                            </strong>
+                            <small>Student</small>
+                        </div>
+                    </div>
+                </header>
+
+                <section className="student-welcome" id="overview">
+                    <div>
+                        <span className="welcome-tag">STUDENT PORTAL</span>
+
+                        <h2>
+                            Welcome back,{" "}
+                            {student?.name || user?.name || "Student"}! 👋
+                        </h2>
 
                         <p>
-                            <strong>Date of Birth:</strong>{" "}
-                            {student.dateOfBirth
-                                ? new Date(
-                                    student.dateOfBirth
-                                ).toLocaleDateString()
-                                : "-"}
+                            View and manage your student profile from one place.
                         </p>
+                    </div>
 
-                        <p><strong>Age:</strong> {student.age} years</p>
+                    <div className="welcome-decoration">🎓</div>
+                </section>
 
-                        <button
-                            onClick={handleEdit}
-                            style={{
-                                background: "#2563eb",
-                                color: "white",
-                                border: "none",
-                                padding: "11px 20px",
-                                borderRadius: "7px",
-                                cursor: "pointer",
-                                marginTop: "10px",
-                            }}
-                        >
-                            Edit Profile
-                        </button>
+                {loading && (
+                    <div className="student-loading">
+                        Loading your profile...
                     </div>
                 )}
 
-                {editing && (
-                    <form onSubmit={handleUpdate}>
-                        <div style={{ marginBottom: "15px" }}>
-                            <label><strong>Name</strong></label>
-                            <input
-                                type="text"
-                                name="name"
-                                value={formData.name}
-                                onChange={handleChange}
-                                required
-                                style={inputStyle}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "15px" }}>
-                            <label><strong>Email</strong></label>
-                            <input
-                                type="email"
-                                value={student.email}
-                                disabled
-                                style={{
-                                    ...inputStyle,
-                                    background: "#e5e7eb",
-                                }}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "15px" }}>
-                            <label><strong>Phone Number</strong></label>
-                            <input
-                                type="tel"
-                                name="phone"
-                                value={formData.phone}
-                                onChange={handleChange}
-                                maxLength="10"
-                                required
-                                style={inputStyle}
-                            />
-                        </div>
-
-                        <div style={{ marginBottom: "15px" }}>
-                            <label><strong>Date of Birth</strong></label>
-                            <input
-                                type="date"
-                                name="dateOfBirth"
-                                value={formData.dateOfBirth}
-                                onChange={handleChange}
-                                max={new Date().toISOString().slice(0, 10)}
-                                required
-                                style={inputStyle}
-                            />
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={saving}
-                            style={{
-                                background: "#16a34a",
-                                color: "white",
-                                border: "none",
-                                padding: "11px 20px",
-                                borderRadius: "7px",
-                                cursor: "pointer",
-                            }}
-                        >
-                            {saving ? "Saving..." : "Save Changes"}
-                        </button>
-
-                        <button
-                            type="button"
-                            onClick={() => setEditing(false)}
-                            disabled={saving}
-                            style={{
-                                background: "#64748b",
-                                color: "white",
-                                border: "none",
-                                padding: "11px 20px",
-                                borderRadius: "7px",
-                                cursor: "pointer",
-                                marginLeft: "10px",
-                            }}
-                        >
-                            Cancel
-                        </button>
-                    </form>
+                {error && (
+                    <div className="student-error">
+                        {error}
+                    </div>
                 )}
 
-                <hr />
+                {!loading && student && (
+                    <>
+                        <section className="student-summary-grid">
+                            <div className="student-summary-card">
+                                <div className="summary-icon blue">♙</div>
+                                <div>
+                                    <p>Full Name</p>
+                                    <h3>{student.name}</h3>
+                                </div>
+                            </div>
 
-                <button
-                    onClick={handleLogout}
-                    style={{
-                        background: "#dc2626",
-                        color: "white",
-                        border: "none",
-                        padding: "11px 22px",
-                        borderRadius: "7px",
-                        cursor: "pointer",
-                    }}
-                >
-                    Logout
-                </button>
-            </div>
+                            <div className="student-summary-card">
+                                <div className="summary-icon green">@</div>
+                                <div>
+                                    <p>Email Address</p>
+                                    <h3 className="summary-email">
+                                        {student.email}
+                                    </h3>
+                                </div>
+                            </div>
+
+                            <div className="student-summary-card">
+                                <div className="summary-icon purple">▤</div>
+                                <div>
+                                    <p>Age</p>
+                                    <h3>
+                                        {student.age ?? "-"} years
+                                    </h3>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="student-profile-section" id="profile">
+                            <div className="student-section-heading">
+                                <div>
+                                    <h2>My Profile</h2>
+                                    <p>
+                                        Your personal and contact information
+                                    </p>
+                                </div>
+
+                                {!editing && (
+                                    <button
+                                        className="student-edit-btn"
+                                        onClick={handleEdit}
+                                    >
+                                        ✎ Edit Profile
+                                    </button>
+                                )}
+                            </div>
+
+                            {!editing ? (
+                                <div className="student-profile-content">
+                                    <div className="profile-avatar-large">
+                                        {firstLetter}
+                                    </div>
+
+                                    <div className="student-profile-details">
+                                        <div className="profile-detail">
+                                            <span>Full Name</span>
+                                            <strong>{student.name}</strong>
+                                        </div>
+
+                                        <div className="profile-detail">
+                                            <span>Email Address</span>
+                                            <strong>{student.email}</strong>
+                                        </div>
+
+                                        <div className="profile-detail">
+                                            <span>Phone Number</span>
+                                            <strong>{student.phone}</strong>
+                                        </div>
+
+                                        <div className="profile-detail">
+                                            <span>Date of Birth</span>
+                                            <strong>
+                                                {student.dateOfBirth
+                                                    ? new Date(
+                                                        student.dateOfBirth
+                                                    ).toLocaleDateString()
+                                                    : "-"}
+                                            </strong>
+                                        </div>
+
+                                        <div className="profile-detail">
+                                            <span>Age</span>
+                                            <strong>
+                                                {student.age ?? "-"} years
+                                            </strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <form
+                                    className="student-edit-form"
+                                    onSubmit={handleUpdate}
+                                >
+                                    <div className="student-form-grid">
+                                        <div className="student-form-group">
+                                            <label>Full Name</label>
+                                            <input
+                                                type="text"
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="student-form-group">
+                                            <label>Email Address</label>
+                                            <input
+                                                type="email"
+                                                value={student.email}
+                                                disabled
+                                            />
+                                        </div>
+
+                                        <div className="student-form-group">
+                                            <label>Phone Number</label>
+                                            <input
+                                                type="tel"
+                                                name="phone"
+                                                value={formData.phone}
+                                                onChange={handleChange}
+                                                maxLength="10"
+                                                required
+                                            />
+                                        </div>
+
+                                        <div className="student-form-group">
+                                            <label>Date of Birth</label>
+                                            <input
+                                                type="date"
+                                                name="dateOfBirth"
+                                                value={formData.dateOfBirth}
+                                                onChange={handleChange}
+                                                max={new Date()
+                                                    .toISOString()
+                                                    .slice(0, 10)}
+                                                required
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="student-form-actions">
+                                        <button
+                                            type="button"
+                                            className="student-cancel-btn"
+                                            onClick={() => setEditing(false)}
+                                            disabled={saving}
+                                        >
+                                            Cancel
+                                        </button>
+
+                                        <button
+                                            type="submit"
+                                            className="student-save-btn"
+                                            disabled={saving}
+                                        >
+                                            {saving
+                                                ? "Saving..."
+                                                : "Save Changes"}
+                                        </button>
+                                    </div>
+                                </form>
+                            )}
+                        </section>
+                    </>
+                )}
+
+                <footer className="student-footer">
+                    StudentHub Student Portal · Student Management System
+                </footer>
+
+            </main>
         </div>
     );
 }
-
-const inputStyle = {
-    display: "block",
-    width: "100%",
-    boxSizing: "border-box",
-    padding: "11px",
-    marginTop: "7px",
-    border: "1px solid #cbd5e1",
-    borderRadius: "7px",
-    fontSize: "14px",
-};
 
 export default StudentDashboard;
